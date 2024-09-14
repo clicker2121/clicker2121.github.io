@@ -3,143 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Click Game</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            justify-content: center;
-            align-items: center;
-        }
-        h1 {
-            font-size: 36px;
-            margin-bottom: 20px;
-        }
-        .coin {
-            width: 150px;
-            height: 150px;
-            background-image: url('https://avatars.mds.yandex.net/i?id=f8a8dd1d947ff379a533a3ca82ff78fc8bc59dfb-12305949-images-thumbs&n=13');
-            background-size: contain;
-            background-repeat: no-repeat;
-            margin-bottom: 30px;
-            cursor: pointer;
-        }
-        .buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-        .buttons button {
-            width: 80px;
-            height: 80px;
-            border: none;
-            background-color: transparent;
-            cursor: pointer;
-        }
-        .buttons img {
-            width: 100%;
-            height: 100%;
-        }
-        .counter {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-        
-        /* Стили для модального окна */
-        .modal {
-            display: none; /* Скрыто по умолчанию */
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            width: 300px;
-            text-align: center;
-        }
-        .modal-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        .modal-buttons button {
-            padding: 10px;
-            font-size: 16px;
-        }
-        .close {
-            margin-top: 10px;
-            cursor: pointer;
-        }
-    </style>
+    <title>Кликер Игра</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+    <div class="container">
+        <h1>Кликер игра</h1>
+        
+        <div class="stats">
+            <p>Клики: <span id="click-count">0</span></p>
+            <p>Монеты: <span id="coin-count">0</span></p>
+            <p>Энергия: <span id="energy-count">1500</span> / <span id="max-energy">1500</span></p>
+            <p>Восстановление энергии: <span id="energy-regen">1</span> в секунду</p>
+        </div>
 
-    <h1>Click the Coin!</h1>
-    <div class="counter" id="counter">0</div>
-    
-    <div class="coin" onclick="incrementCounter()"></div>
-    
-    <div class="buttons">
-        <button onclick="openModal()"><img src="https://avatars.mds.yandex.net/i?id=f8a8dd1d947ff379a533a3ca82ff78fc8bc59dfb-12305949-images-thumbs&n=13" alt="Button 1"></button>
-        <button><img src="https://avatars.mds.yandex.net/i?id=f8a8dd1d947ff379a533a3ca82ff78fc8bc59dfb-12305949-images-thumbs&n=13" alt="Button 2"></button>
-        <button><img src="https://avatars.mds.yandex.net/i?id=f8a8dd1d947ff379a533a3ca82ff78fc8bc59dfb-12305949-images-thumbs&n=13" alt="Button 3"></button>
-        <button><img src="https://avatars.mds.yandex.net/i?id=f8a8dd1d947ff379a533a3ca82ff78fc8bc59dfb-12305949-images-thumbs&n=13" alt="Button 4"></button>
-    </div>
+        <!-- Полоска энергии -->
+        <div class="progress-bar-container">
+            <div id="energy-bar" class="progress-bar"></div>
+        </div>
 
-    <!-- Модальное окно -->
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <h2>More Buttons</h2>
-            <div class="modal-buttons">
-                <button>Button A</button>
-                <button>Button B</button>
-                <button>Button C</button>
-                <button>Button D</button>
-            </div>
-            <div class="close" onclick="closeModal()">Close</div>
+        <!-- Кнопка клика -->
+        <button id="click-btn" onclick="handleClick()">Клик!</button>
+
+        <!-- Основные кнопки -->
+        <div class="buttons-container">
+            <button onclick="showBuyButtons(1)">Кнопка 1</button>
+            <button onclick="showBuyButtons(2)">Кнопка 2</button>
+            <button onclick="showBuyButtons(3)">Кнопка 3</button>
+        </div>
+
+        <!-- Кнопки покупки для улучшений кликов -->
+        <div id="buy-buttons-1" class="buy-buttons">
+            <button id="buy-btn-1" onclick="buy(1, 0)">Купить 1 (+1 клик за клик, 10 кликов)</button>
+            <button id="buy-btn-2" onclick="buy(2, 1)">Купить 2 (+2 клика за клик, 20 кликов)</button>
+            <button id="buy-btn-3" onclick="buy(3, 2)">Купить 3 (+3 клика за клик, 30 кликов)</button>
+            <button id="buy-btn-4" onclick="buy(4, 3)">Купить 4 (+4 клика за клик, 40 кликов)</button>
+            <button id="buy-btn-5" onclick="buy(5, 4)">Купить 5 (+5 кликов за клик, 50 кликов)</button>
+        </div>
+
+        <!-- Кнопки покупки для улучшений монет -->
+        <div id="buy-buttons-2" class="buy-buttons">
+            <button id="coin-btn-1" onclick="buyCoins(1, coinUpgradePrices[0], 0)">Купить 1 (+1 монета в секунду, 5 кликов)</button>
+            <button id="coin-btn-2" onclick="buyCoins(2, coinUpgradePrices[1], 1)">Купить 2 (+2 монеты в секунду, 10 кликов)</button>
+            <button id="coin-btn-3" onclick="buyCoins(3, coinUpgradePrices[2], 2)">Купить 3 (+3 монеты в секунду, 15 кликов)</button>
+            <button id="coin-btn-4" onclick="buyCoins(4, coinUpgradePrices[3], 3)">Купить 4 (+4 монеты в секунду, 20 кликов)</button>
+            <button id="coin-btn-5" onclick="buyCoins(5, coinUpgradePrices[4], 4)">Купить 5 (+5 монет в секунду, 25 кликов)</button>
+        </div>
+
+        <!-- Кнопки покупки для улучшений энергии -->
+        <div id="buy-buttons-3" class="buy-buttons">
+            <button id="energy-btn-1" onclick="buyEnergyUpgrade('maxEnergy', energyUpgradePrices[0], 500)">Купить 1 (+500 к максимальной энергии, 75 кликов)</button>
+            <button id="energy-btn-2" onclick="buyEnergyUpgrade('maxEnergy', energyUpgradePrices[1], 1000)">Купить 2 (+1000 к максимальной энергии, 100 кликов)</button>
+            <button id="energy-btn-3" onclick="buyEnergyUpgrade('regen', energyUpgradePrices[2], 1)">Купить 3 (+1 к восстановлению энергии в секунду, 150 кликов)</button>
+            <button id="energy-btn-4" onclick="buyEnergyUpgrade('regen', energyUpgradePrices[3], 2)">Купить 4 (+2 к восстановлению энергии в секунду, 200 кликов)</button>
+            <button id="energy-btn-5" onclick="buyEnergyUpgrade('regen', energyUpgradePrices[4], 5)">Купить 5 (+5 к восстановлению энергии в секунду, 300 кликов)</button>
         </div>
     </div>
 
-    <script>
-        let count = 0;
-
-        function incrementCounter() {
-            count++;
-            document.getElementById('counter').innerText = count;
-        }
-
-        // Открыть модальное окно
-        function openModal() {
-            document.getElementById("myModal").style.display = "flex";
-        }
-
-        // Закрыть модальное окно
-        function closeModal() {
-            document.getElementById("myModal").style.display = "none";
-        }
-
-        // Закрытие модального окна при клике вне его области
-        window.onclick = function(event) {
-            let modal = document.getElementById("myModal");
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-    </script>
-
+    <script src="js/script.js"></script>
 </body>
 </html>
-
