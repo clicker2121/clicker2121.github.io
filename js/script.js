@@ -131,5 +131,6 @@ function updateStats() {
     energyBar.style.width = (energy / maxEnergy) * 100 + '%';
 }
 
+
 // Запуск восстановления энергии
 regenerateEnergy();
