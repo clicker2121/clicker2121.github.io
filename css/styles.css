@@ -1,137 +1,30 @@
-/* Современные стили */
 body {
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #74ebd5, #ACB6E5);
-    margin: 0;
-    padding: 0;
-    color: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    transition: all 0.3s ease-in-out;
-}
-
-.container {
-    width: 90%;
-    max-width: 500px;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-    padding: 20px;
+    font-family: Arial, sans-serif;
     text-align: center;
-    color: #fff;
-    transition: all 0.3s ease-in-out;
 }
 
-h1 {
-    font-size: 36px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    color: #f5f5f5;
-    text-shadow: 3px 5px 8px rgba(0, 0, 0, 0.2);
+canvas {
+    background-color: #000;
+    display: block;
+    margin: 20px auto;
+    border: 1px solid #333;
+    touch-action: none; /* Отключение скролла для удобного управления */
 }
 
-/* Статистика в одну строку */
-.stats {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.stats p {
-    flex: 1;
-    text-align: center;
+button#startButton {
+    padding: 10px 20px;
     font-size: 18px;
-    color: #fff;
+    margin-top: 20px;
 }
 
-#click-count, #coin-count, #energy-count, #max-energy, #energy-regen {
-    font-weight: bold;
-    color: #FFD700;
-}
+@media (max-width: 600px) {
+    canvas {
+        width: 300px;
+        height: 300px;
+    }
 
-/* Полоска энергии */
-.progress-bar-container {
-    width: 100%;
-    height: 30px;
-    background-color: rgba(255, 255, 255, 0.3);
-    border-radius: 15px;
-    margin-bottom: 20px;
-    box-shadow: inset 0 3px 7px rgba(0, 0, 0, 0.3);
-}
-
-.progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #00C9FF, #92FE9D);
-    transition: width 0.3s ease;
-    border-radius: 15px;
-}
-
-/* Изображение монеты для кликов */
-#click-img {
-    width: 150px;
-    height: 150px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border-radius: 50%;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
-}
-
-#click-img:hover {
-    transform: scale(1.1);
-    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
-}
-
-/* Основные кнопки */
-.buttons-container {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 30px;
-}
-
-.buttons-container button {
-    padding: 15px 30px;
-    font-size: 18px;
-    background-color: #5B86E5;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    color: #fff;
-    transition: all 0.3s ease;
-    font-weight: 600;
-    box-shadow: 0 8px 15px rgba(91, 134, 229, 0.4);
-}
-
-.buttons-container button:hover {
-    background-color: #6E7FF3;
-    transform: scale(1.05);
-    box-shadow: 0 10px 20px rgba(91, 134, 229, 0.5);
-}
-
-/* Кнопки покупки */
-.buy-buttons button {
-    width: 90%;
-    margin: 10px auto;
-    padding: 10px;
-    background-color: #FF8C00;
-    border: none;
-    border-radius: 10px;
-    color: #fff;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
-}
-
-.buy-buttons button:hover {
-    background-color: #FFA500;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-}
-
-.buy-buttons {
-    display: none;
+    button#startButton {
+        font-size: 16px;
+        padding: 10px;
+    }
 }
