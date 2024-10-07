@@ -1,65 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Кликер Игра</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <title>Змейка</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Кликер игра</h1>
-        
-        <div class="stats">
-            <p>Клики: <span id="click-count">0</span></p>
-            <p>Монеты: <span id="coin-count">0</span></p>
-            <p>Энергия: <span id="energy-count">1500</span> / <span id="max-energy">1500</span></p>
-            <p>Восстановление энергии: <span id="energy-regen">1</span> в секунду</p>
-        </div>
-
-        <!-- Полоска энергии -->
-        <div class="progress-bar-container">
-            <div id="energy-bar" class="progress-bar"></div>
-        </div>
-
-        <!-- Кнопка клика -->
-        <button id="click-btn" onclick="handleClick()">Клик!</button>
-
-        <!-- Основные кнопки -->
-        <div class="buttons-container">
-            <button onclick="showBuyButtons(1)">Кнопка 1</button>
-            <button onclick="showBuyButtons(2)">Кнопка 2</button>
-            <button onclick="showBuyButtons(3)">Кнопка 3</button>
-        </div>
-
-        <!-- Кнопки покупки для улучшений кликов -->
-        <div id="buy-buttons-1" class="buy-buttons">
-            <button id="buy-btn-1" onclick="buy(1, 0)">Купить 1 (+1 клик за клик, 10 кликов)</button>
-            <button id="buy-btn-2" onclick="buy(2, 1)">Купить 2 (+2 клика за клик, 20 кликов)</button>
-            <button id="buy-btn-3" onclick="buy(3, 2)">Купить 3 (+3 клика за клик, 30 кликов)</button>
-            <button id="buy-btn-4" onclick="buy(4, 3)">Купить 4 (+4 клика за клик, 40 кликов)</button>
-            <button id="buy-btn-5" onclick="buy(5, 4)">Купить 5 (+5 кликов за клик, 50 кликов)</button>
-        </div>
-
-        <!-- Кнопки покупки для улучшений монет -->
-        <div id="buy-buttons-2" class="buy-buttons">
-            <button id="coin-btn-1" onclick="buyCoins(1, coinUpgradePrices[0], 0)">Купить 1 (+1 монета в секунду, 5 кликов)</button>
-            <button id="coin-btn-2" onclick="buyCoins(2, coinUpgradePrices[1], 1)">Купить 2 (+2 монеты в секунду, 10 кликов)</button>
-            <button id="coin-btn-3" onclick="buyCoins(3, coinUpgradePrices[2], 2)">Купить 3 (+3 монеты в секунду, 15 кликов)</button>
-            <button id="coin-btn-4" onclick="buyCoins(4, coinUpgradePrices[3], 3)">Купить 4 (+4 монеты в секунду, 20 кликов)</button>
-            <button id="coin-btn-5" onclick="buyCoins(5, coinUpgradePrices[4], 4)">Купить 5 (+5 монет в секунду, 25 кликов)</button>
-        </div>
-
-        <!-- Кнопки покупки для улучшений энергии -->
-        <div id="buy-buttons-3" class="buy-buttons">
-            <button id="energy-btn-1" onclick="buyEnergyUpgrade('maxEnergy', energyUpgradePrices[0], 500)">Купить 1 (+500 к максимальной энергии, 75 кликов)</button>
-            <button id="energy-btn-2" onclick="buyEnergyUpgrade('maxEnergy', energyUpgradePrices[1], 1000)">Купить 2 (+1000 к максимальной энергии, 100 кликов)</button>
-            <button id="energy-btn-3" onclick="buyEnergyUpgrade('regen', energyUpgradePrices[2], 1)">Купить 3 (+1 к восстановлению энергии в секунду, 150 кликов)</button>
-            <button id="energy-btn-4" onclick="buyEnergyUpgrade('regen', energyUpgradePrices[3], 2)">Купить 4 (+2 к восстановлению энергии в секунду, 200 кликов)</button>
-            <button id="energy-btn-5" onclick="buyEnergyUpgrade('regen', energyUpgradePrices[4], 5)">Купить 5 (+5 к восстановлению энергии в секунду, 300 кликов)</button>
-        </div>
-    </div>
-
+    <h1>Игра "Змейка"</h1>
+    <canvas id="gameCanvas"></canvas>
+    <button id="startButton">Начать игру</button>
     <script src="js/script.js"></script>
 </body>
 </html>
