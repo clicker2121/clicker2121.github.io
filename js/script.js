@@ -1,136 +1,133 @@
-let clickCount = 0;
-let clickPower = 1;
-let coinCount = 0;
-let coinPerSecond = 0;
-let coinIntervalStarted = false;
-let energy = 1500;
-let maxEnergy = 1500;
-let energyRegen = 1;
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const startButton = document.getElementById('startButton');
 
-// Изначальные цены для улучшений кликов
-let upgradePricesGroup1 = [10, 20, 30, 40, 50];
+// Размер ячейки змейки и сетки
+const box = 20;
+canvas.width = 320;
+canvas.height = 320;
 
-// Цены для улучшений монет в секунду
-let coinUpgradePrices = [5, 10, 15, 20, 25];
+// Начальные настройки игры
+let snake = [{ x: 160, y: 160 }];
+let direction = 'RIGHT';
+let food = {
+    x: Math.floor(Math.random() * (canvas.width / box)) * box,
+    y: Math.floor(Math.random() * (canvas.height / box)) * box
+};
+let score = 0;
+let game; // Для хранения интервала игры
 
-// Цены для улучшений энергии
-let energyUpgradePrices = [75, 100, 150, 200, 300];
+// Координаты для обработки свайпов
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
 
-// Функция обработки клика
-function handleClick() {
-    if (energy >= clickPower) { // Убедимся, что у пользователя достаточно энергии
-        clickCount += clickPower;
-        energy -= clickPower;  // Энергия уменьшается пропорционально кликам
-        updateStats();
-    } else {
-        alert('Недостаточно энергии для клика!');
-    }
-}
+// Функция для обработки направления свайпа
+function handleSwipe() {
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
 
-// Функция для отображения кнопок "Купить" по выбранной группе (1, 2 или 3)
-function showBuyButtons(group) {
-    const buyButtonsGroup1 = document.getElementById('buy-buttons-1');
-    const buyButtonsGroup2 = document.getElementById('buy-buttons-2');
-    const buyButtonsGroup3 = document.getElementById('buy-buttons-3');
-
-    if (group === 1) {
-        buyButtonsGroup1.style.display = (buyButtonsGroup1.style.display === 'none') ? 'block' : 'none';
-        buyButtonsGroup2.style.display = 'none';
-        buyButtonsGroup3.style.display = 'none';
-    } else if (group === 2) {
-        buyButtonsGroup2.style.display = (buyButtonsGroup2.style.display === 'none') ? 'block' : 'none';
-        buyButtonsGroup1.style.display = 'none';
-        buyButtonsGroup3.style.display = 'none';
-    } else if (group === 3) {
-        buyButtonsGroup3.style.display = (buyButtonsGroup3.style.display === 'none') ? 'block' : 'none';
-        buyButtonsGroup1.style.display = 'none';
-        buyButtonsGroup2.style.display = 'none';
-    }
-}
-
-// Функция покупки для первой группы улучшений (увеличение кликов за клик)
-function buy(powerIncrease, index) {
-    const cost = upgradePricesGroup1[index];
-    if (clickCount >= cost) {
-        clickCount -= cost;
-        clickPower += powerIncrease;
-        upgradePricesGroup1[index] = Math.floor(upgradePricesGroup1[index] * 1.5);
-        document.getElementById(`buy-btn-${index + 1}`).textContent =
-            `Купить ${index + 1} (+${powerIncrease} кликов за клик, ${upgradePricesGroup1[index]} кликов)`;
-        updateStats();
-    } else {
-        alert('Недостаточно кликов для покупки!');
-    }
-}
-
-// Функция покупки улучшений для монет в секунду
-function buyCoins(coinAmount, cost, index) {
-    if (clickCount >= cost) {
-        clickCount -= cost;
-        coinPerSecond += coinAmount;
-        coinUpgradePrices[index] = Math.floor(coinUpgradePrices[index] * 1.5);
-        document.getElementById(`coin-btn-${index + 1}`).textContent =
-            `Купить ${index + 1} (${coinAmount} монет в секунду, ${coinUpgradePrices[index]} кликов)`;
-
-        if (!coinIntervalStarted) {
-            startCoinGeneration();
-            coinIntervalStarted = true;
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // Горизонтальный свайп
+        if (deltaX > 0 && direction !== 'LEFT') {
+            direction = 'RIGHT'; // Свайп вправо
+        } else if (deltaX < 0 && direction !== 'RIGHT') {
+            direction = 'LEFT'; // Свайп влево
         }
-        updateStats();
     } else {
-        alert('Недостаточно кликов для покупки!');
+        // Вертикальный свайп
+        if (deltaY > 0 && direction !== 'UP') {
+            direction = 'DOWN'; // Свайп вниз
+        } else if (deltaY < 0 && direction !== 'DOWN') {
+            direction = 'UP'; // Свайп вверх
+        }
     }
 }
 
-// Функция покупки улучшений для энергии
-function buyEnergyUpgrade(type, cost, value) {
-    const index = energyUpgradePrices.indexOf(cost);
-    if (clickCount >= cost) {
-        clickCount -= cost;
-        if (type === 'maxEnergy') {
-            maxEnergy += value;
-        } else if (type === 'regen') {
-            energyRegen += value;
-        }
-        energyUpgradePrices[index] = Math.floor(cost * 1.5);
-        document.getElementById(`energy-btn-${index + 1}`).textContent =
-            `Купить ${index + 1} (+${value} ${type === 'maxEnergy' ? 'максимальной энергии' : 'к восстановлению энергии в секунду'}, ${energyUpgradePrices[index]} кликов)`;
-        updateStats();
+// Рисуем змейку и еду
+function draw() {
+    // Очищаем поле
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Рисуем змейку
+    for (let i = 0; i < snake.length; i++) {
+        ctx.fillStyle = (i === 0) ? 'green' : 'white';
+        ctx.fillRect(snake[i].x, snake[i].y, box, box);
+        ctx.strokeStyle = 'black';
+        ctx.strokeRect(snake[i].x, snake[i].y, box, box);
+    }
+
+    // Рисуем еду
+    ctx.fillStyle = 'red';
+    ctx.fillRect(food.x, food.y, box, box);
+
+    // Движение змейки
+    let snakeX = snake[0].x;
+    let snakeY = snake[0].y;
+
+    if (direction === 'LEFT') snakeX -= box;
+    if (direction === 'UP') snakeY -= box;
+    if (direction === 'RIGHT') snakeX += box;
+    if (direction === 'DOWN') snakeY += box;
+
+    // Проверка на столкновение с едой
+    if (snakeX === food.x && snakeY === food.y) {
+        score++;
+        food = {
+            x: Math.floor(Math.random() * (canvas.width / box)) * box,
+            y: Math.floor(Math.random() * (canvas.height / box)) * box
+        };
     } else {
-        alert('Недостаточно кликов для покупки!');
+        snake.pop();
+    }
+
+    // Добавляем новую голову змейки
+    let newHead = { x: snakeX, y: snakeY };
+    snake.unshift(newHead);
+
+    // Проверка на столкновение с границей или самой собой
+    if (
+        snakeX < 0 || snakeY < 0 ||
+        snakeX >= canvas.width || snakeY >= canvas.height ||
+        collision(newHead, snake)
+    ) {
+        clearInterval(game);
+        alert('Игра окончена! Ваш счёт: ' + score);
     }
 }
 
-// Запуск генерации монет
-function startCoinGeneration() {
-    setInterval(function () {
-        coinCount += coinPerSecond;
-        updateStats();
-    }, 1000);
-}
-
-// Восстановление энергии
-function regenerateEnergy() {
-    setInterval(function () {
-        if (energy < maxEnergy) {
-            energy += energyRegen;
-            updateStats();
+// Проверка столкновения змейки самой с собой
+function collision(head, array) {
+    for (let i = 1; i < array.length; i++) {
+        if (head.x === array[i].x && head.y === array[i].y) {
+            return true;
         }
-    }, 1000);
+    }
+    return false;
 }
 
-// Обновление статистики (клики, монеты, энергия)
-function updateStats() {
-    document.getElementById('click-count').textContent = clickCount;
-    document.getElementById('coin-count').textContent = coinCount;
-    document.getElementById('energy-count').textContent = energy;
-    document.getElementById('max-energy').textContent = maxEnergy;
-    document.getElementById('energy-regen').textContent = energyRegen;
+// Управление через свайпы
+canvas.addEventListener('touchstart', function(e) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+});
 
-    const energyBar = document.getElementById('energy-bar');
-    energyBar.style.width = (energy / maxEnergy) * 100 + '%';
+canvas.addEventListener('touchend', function(e) {
+    touchEndX = e.changedTouches[0].clientX;
+    touchEndY = e.changedTouches[0].clientY;
+    handleSwipe();
+});
+
+// Старт игры
+function startGame() {
+    snake = [{ x: 160, y: 160 }];
+    direction = 'RIGHT';
+    score = 0;
+
+    // Запускаем игру с интервалом 200 мс (замедленная скорость)
+    game = setInterval(draw, 200);
 }
 
-
-// Запуск восстановления энергии
-regenerateEnergy();
+// Добавляем событие на кнопку
+startButton.addEventListener('click', startGame);
