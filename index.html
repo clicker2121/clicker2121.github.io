@@ -1,28 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TETRIS</title>
-  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
+  <div class="game-wrapper">
+    <div class="controls">
+      <button type="button" id="start" class="start">PLAY</button>
+      <button type="button" id="restart" class="restart">RESTART</button>
+    </div>
 
-  <div class="container">
+    <div class="game-area">
+      <canvas width="320" height="640" id="game"></canvas>
+    </div>
+	<div id="game-over-text" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-family: monospace; font-size: 36px; text-align: center; z-index: 2;">
+		GAME OVER!
+	</div>
 
-    <canvas width="320" height="640" id="game"></canvas>
 
-  </div>
 
-  <div class="container">
-    <span>Score:&nbsp;</span><span class="score">0</span>
-  </div>
-
-  <div class="container">
-    <span>The best result:&nbsp;</span><span class="best-score">0</span>
-  </div>
-  <div class="container">
-    <button type="button" id="restart" class="restart">RESTART</button>
+    <div class="score-board">
+      <div class="score-item">
+        <span>Score: </span><span class="score">0</span>
+      </div>
+      <div class="score-item">
+        <span>The best result: </span><span class="best-score">0</span>
+      </div>
+    </div>
   </div>
 
   <script src="js/script.js"></script>
