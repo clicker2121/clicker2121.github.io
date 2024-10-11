@@ -1,13 +1,38 @@
-//  Сделано по методу Стивена Ламберта
-// https://gist.github.com/straker/3c98304f8a6a9174efd8292800891ea1
-// Чтобы обойти сложности с фигурами, их движением при объектном подходе
-
 // Находим нужные элементы
  const canvas = document.getElementById('game');
  const context = canvas.getContext('2d');
  const score = document.querySelector('.score');
  const bestScore = document.querySelector('.best-score');
  const restartBtn = document.querySelector('.restart');
+ 
+// Убедитесь, что вы не вызываете анимацию до нажатия кнопки
+// Уберите или закомментируйте эту строку
+// rAF = requestAnimationFrame(loop); 
+
+// Находим нужные элементы
+const startBtn = document.getElementById('start'); // Кнопка PLAY
+
+// Функция для старта игры
+// Функция для старта игры
+function startGame() {
+  startBtn.style.display = 'none'; // Скрыть кнопку "PLAY"
+  canvas.style.filter = 'none'; // Убираем размытие
+  tetromino = getNextTetromino(); // Получаем первую фигуру
+  rAF = requestAnimationFrame(loop); // Запускаем игровой цикл
+  
+  // Убедитесь, что надпись "GAME OVER" скрыта
+  const gameOverText = document.getElementById('game-over-text');
+  gameOverText.style.display = 'none';
+  
+  // Скрываем кнопку рестарт
+  restartBtn.style.display = 'none';
+}
+
+
+
+// Обработчик события по клику на кнопку "PLAY"
+startBtn.addEventListener('click', startGame);
+
 
  // При загрузке страницы возьмем сохраненное значение лучшего результата
  window.addEventListener('load', () => {
@@ -225,34 +250,35 @@
  }
 
    // показываем надпись Game Over
-   function showGameOver() {
-     // прекращаем всю анимацию игры
-     cancelAnimationFrame(rAF);
-     // ставим флаг окончания
-     gameOver = true;
-     // рисуем чёрный прямоугольник посередине поля
-     context.fillStyle = 'black';
-     context.globalAlpha = 0.75;
-     context.fillRect(0, canvas.height / 2 - 30, canvas.width, 60);
-     // пишем надпись белым моноширинным шрифтом по центру
-     context.globalAlpha = 1;
-     context.fillStyle = 'white';
-     context.font = '36px monospace';
-     context.textAlign = 'center';
-     context.textBaseline = 'middle';
-     context.fillText('GAME OVER!', canvas.width / 2, canvas.height / 2);
-     let recordCount = parseInt(bestScore.textContent);
-     let scoreCount  = parseInt(score.textContent);
+ function showGameOver() {
+  // прекращаем всю анимацию игры
+  cancelAnimationFrame(rAF);
+  // ставим флаг окончания
+  gameOver = true;
 
-     // Если текущий счет превысил максимальный результат
-     // Запишем его в лучший результат и локальное хранилище
-     
-     if (scoreCount > recordCount) {      
-      bestScore.textContent = scoreCount;
-      let valuev = bestScore.textContent;
-      window.localStorage.setItem(bestScore, valuev);
-     }
-   } 
+  // Добавляем размытие фона только к холсту
+  canvas.style.filter = 'blur(5px)';
+
+  // Показать текст "GAME OVER"
+  const gameOverText = document.getElementById('game-over-text');
+  gameOverText.style.display = 'block';
+
+  let recordCount = parseInt(bestScore.textContent);
+  let scoreCount = parseInt(score.textContent);
+
+  // Если текущий счёт превысил максимальный результат
+  if (scoreCount > recordCount) {
+    bestScore.textContent = scoreCount;
+    let valuev = bestScore.textContent;
+    window.localStorage.setItem(bestScore, valuev);
+  }
+
+  // Показываем кнопку "Restart"
+  restartBtn.style.display = 'block';
+}
+
+
+
 
  // Главный цикл игры
  function loop() {
@@ -383,100 +409,28 @@
      tetromino.row = row;
    }
  });
- let touchStartX = 0;
-let touchStartY = 0;
-let touchEndX = 0;
-let touchEndY = 0;
-
-// Функция для обработки касания экрана
-function handleTouchStart(evt) {
-  const firstTouch = evt.touches[0];
-  touchStartX = firstTouch.clientX;
-  touchStartY = firstTouch.clientY;
-}
-
-// Функция для обработки перемещения пальца по экрану
-function handleTouchMove(evt) {
-  const touch = evt.touches[0];
-  touchEndX = touch.clientX;
-  touchEndY = touch.clientY;
-}
-
-// Функция для завершения свайпа и обработки направления
-function handleTouchEnd() {
-  const deltaX = touchEndX - touchStartX;
-  const deltaY = touchEndY - touchStartY;
-
-  if (Math.abs(deltaX) > Math.abs(deltaY)) {
-    if (deltaX > 50) {
-      // Свайп вправо
-      moveTetrominoRight();
-    } else if (deltaX < -50) {
-      // Свайп влево
-      moveTetrominoLeft();
-    }
-  } else {
-    if (deltaY > 50) {
-      // Свайп вниз
-      moveTetrominoDown();
-    } else if (deltaY < -50) {
-      // Свайп вверх (можно использовать для ускорения падения)
-      rotateTetromino();
-    }
-  }
-}
-
-// Функция для одиночного тапа (меняем форму фигуры)
-function handleSingleTap() {
-  rotateTetromino();
-}
-
-// Обработчики касаний
-document.addEventListener('touchstart', handleTouchStart, false);
-document.addEventListener('touchmove', handleTouchMove, false);
-document.addEventListener('touchend', handleTouchEnd, false);
-
-// Реализация функций для перемещения и вращения фигуры
-function moveTetrominoLeft() {
-  const col = tetromino.col - 1;
-  if (isValidMove(tetromino.matrix, tetromino.row, col)) {
-    tetromino.col = col;
-  }
-}
-
-function moveTetrominoRight() {
-  const col = tetromino.col + 1;
-  if (isValidMove(tetromino.matrix, tetromino.row, col)) {
-    tetromino.col = col;
-  }
-}
-
-function moveTetrominoDown() {
-  const row = tetromino.row + 1;
-  if (!isValidMove(tetromino.matrix, row, tetromino.col)) {
-    tetromino.row = row - 1;
-    placeTetromino();
-  } else {
-    tetromino.row = row;
-  }
-}
-
-function rotateTetromino() {
-  const matrix = rotate(tetromino.matrix);
-  if (isValidMove(matrix, tetromino.row, tetromino.col)) {
-    tetromino.matrix = matrix;
-  }
-}
-
-
- // старт игры
- rAF = requestAnimationFrame(loop);
+ 
 
  // Обработчик события по клику на кнопку рестарта
  restartBtn.addEventListener('click', restart);
   // Функция, отрабатывающая после клика, которая перехагружает страницу 
- function restart() {  
-  window.location.reload();  
-};
-
+function restart() {  
+  // Скрываем кнопку "Restart" при нажатии
+  restartBtn.style.display = 'none';  
+  gameOver = false;  // Сбрасываем флаг окончания игры
+  scorePoints = 0;   // Сбрасываем счёт
+  score.textContent = scorePoints; // Обновляем отображение очков
+  playfield = [];  // Очищаем игровое поле
+  
+  // Инициализируем пустое игровое поле
+  for (let row = -2; row < 20; row++) {
+    playfield[row] = [];
+    for (let col = 0; col < 10; col++) {
+      playfield[row][col] = 0;
+    }
+  }
+  
+  // Перезапускаем игру
+  startGame();  
+}
 
