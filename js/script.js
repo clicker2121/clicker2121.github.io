@@ -162,6 +162,70 @@ startBtn.addEventListener('click', startGame);
         });
     });
 }
+// Переменные для хранения начальных координат касания
+let touchStartX = 0;
+let touchStartY = 0;
+
+// Определяем чувствительность свайпа
+const swipeThreshold = 30; // Минимальная длина свайпа для срабатывания
+
+// Обработчик для начала касания (фиксируем начальные координаты)
+canvas.addEventListener('touchstart', function(event) {
+  const touch = event.touches[0];
+  touchStartX = touch.clientX;
+  touchStartY = touch.clientY;
+});
+
+// Обработчик для окончания касания (определяем направление свайпа)
+canvas.addEventListener('touchend', function(event) {
+  const touchEndX = event.changedTouches[0].clientX;
+  const touchEndY = event.changedTouches[0].clientY;
+
+  const deltaX = touchEndX - touchStartX;
+  const deltaY = touchEndY - touchStartY;
+
+  // Определяем тип свайпа
+  if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    // Горизонтальный свайп
+    if (deltaX > swipeThreshold) {
+      // Свайп вправо (двигаем фигуру вправо)
+      const col = tetromino.col + 1;
+      if (isValidMove(tetromino.matrix, tetromino.row, col)) {
+        tetromino.col = col;
+      }
+    } else if (deltaX < -swipeThreshold) {
+      // Свайп влево (двигаем фигуру влево)
+      const col = tetromino.col - 1;
+      if (isValidMove(tetromino.matrix, tetromino.row, col)) {
+        tetromino.col = col;
+      }
+    }
+  } else {
+    // Вертикальный свайп
+    if (deltaY > swipeThreshold) {
+      // Свайп вниз (ускоряем падение фигуры)
+      const row = tetromino.row + 1;
+      if (!isValidMove(tetromino.matrix, row, tetromino.col)) {
+        tetromino.row = row - 1;
+        placeTetromino();
+        return;
+      }
+      tetromino.row = row;
+    }
+  }
+});
+
+// Обработчик для нажатия на экран (меняем форму фигуры)
+canvas.addEventListener('touchstart', function(event) {
+  if (!gameOver) {
+    // Поворачиваем фигуру на 90 градусов
+    const matrix = rotate(tetromino.matrix);
+    if (isValidMove(matrix, tetromino.row, tetromino.col)) {
+      tetromino.matrix = matrix;
+    }
+  }
+});
+
 
  // получаем следующую фигуру
  function getNextTetromino() {
