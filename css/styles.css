@@ -120,7 +120,7 @@ button:hover {
 /* Responsive styles */
 @media screen and (max-width: 600px) {
   .game-area {
-    width: 10vw; /* Ширина игрового поля 90% от ширины экрана */
+    width: 70vw; /* Ширина игрового поля 90% от ширины экрана */
     height: 70vh; /* Высота игрового поля 70% от высоты экрана */
   }
 
