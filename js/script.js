@@ -59,6 +59,7 @@ startBtn.addEventListener('click', startGame);
      playfield[row][col] = 0;
    }
  }
+ 
  // Получается поле 10 х 20
 
  // Как рисовать каждую фигуру бралось здесь
@@ -148,6 +149,19 @@ startBtn.addEventListener('click', startGame);
      tetrominoSequence.push(name);
    }
  }
+ function drawNextTetromino() {
+    nextCtx.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
+    const shape = tetrominos[nextTetromino];
+    nextCtx.fillStyle = colors[nextTetromino];
+    shape.forEach((row, y) => {
+        row.forEach((value, x) => {
+            if (value) {
+                nextCtx.fillRect(x + 1, y + 1, 1, 1); // Сдвиг для отображения
+                nextCtx.strokeRect(x + 1, y + 1, 1, 1); // Контур для фигур
+            }
+        });
+    });
+}
 
  // получаем следующую фигуру
  function getNextTetromino() {
@@ -248,6 +262,7 @@ startBtn.addEventListener('click', startGame);
    // получаем следующую фигуру
    tetromino = getNextTetromino();
  }
+ 
 
    // показываем надпись Game Over
  function showGameOver() {
@@ -258,10 +273,6 @@ startBtn.addEventListener('click', startGame);
 
   // Добавляем размытие фона только к холсту
   canvas.style.filter = 'blur(5px)';
-
-  // Показать текст "GAME OVER"
-  const gameOverText = document.getElementById('game-over-text');
-  gameOverText.style.display = 'block';
 
   let recordCount = parseInt(bestScore.textContent);
   let scoreCount = parseInt(score.textContent);
